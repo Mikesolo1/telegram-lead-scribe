@@ -9,10 +9,14 @@ import { TestimonialsSection } from "@/components/sections/testimonials-section"
 import { PricingSection } from "@/components/sections/pricing-section";
 import { FaqSection } from "@/components/sections/faq-section";
 import { CtaSection } from "@/components/sections/cta-section";
+import { AnimatedBackground } from "@/components/ui/animated-background";
+import { CustomCursor } from "@/components/ui/custom-cursor";
 
 const Index = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="relative flex min-h-screen flex-col antialiased">
+      <AnimatedBackground />
+      <CustomCursor />
       <Header />
       <main className="flex-grow">
         <HeroSection />
