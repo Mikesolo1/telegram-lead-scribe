@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
+import { DialogClose } from "@/components/ui/dialog";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -30,6 +30,7 @@ const formSchema = z.object({
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,18 +48,24 @@ export function ContactForm() {
     // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
-      form.reset();
+      setIsSuccess(true);
       
       toast({
         title: "Заявка отправлена!",
         description: "Мы свяжемся с вами в ближайшее время.",
       });
+      
+      // Reset form after 1 second
+      setTimeout(() => {
+        form.reset();
+        setIsSuccess(false);
+      }, 1000);
     }, 1000);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="name"
@@ -115,9 +122,19 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Отправка..." : "Отправить заявку"}
-        </Button>
+        <div className="flex items-center justify-end gap-2 pt-2">
+          {isSuccess ? (
+            <DialogClose asChild>
+              <Button type="button" className="w-full">
+                Закрыть
+              </Button>
+            </DialogClose>
+          ) : (
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? "Отправка..." : "Отправить заявку"}
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );

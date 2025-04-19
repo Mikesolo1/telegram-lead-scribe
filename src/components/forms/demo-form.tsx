@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { DialogClose } from "@/components/ui/dialog";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -25,6 +26,7 @@ const formSchema = z.object({
 
 export function DemoForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,12 +43,18 @@ export function DemoForm() {
     // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
-      form.reset();
+      setIsSuccess(true);
       
       toast({
         title: "Заявка на демо отправлена!",
         description: "Наш менеджер свяжется с вами, чтобы провести демонстрацию.",
       });
+      
+      // Reset form after 1 second
+      setTimeout(() => {
+        form.reset();
+        setIsSuccess(false);
+      }, 1000);
     }, 1000);
   }
 
@@ -92,9 +100,19 @@ export function DemoForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Отправка..." : "Запросить демонстрацию"}
-        </Button>
+        <div className="flex items-center justify-end gap-2 pt-2">
+          {isSuccess ? (
+            <DialogClose asChild>
+              <Button type="button" className="w-full">
+                Закрыть
+              </Button>
+            </DialogClose>
+          ) : (
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? "Отправка..." : "Запросить демонстрацию"}
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );
