@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,6 +27,9 @@ const formSchema = z.object({
   message: z.string().optional(),
 });
 
+const TG_TOKEN = "7969964492:AAGBBkXJyLlRFeovbv8uZr4fdmgNmuO9gXQ";
+const CHAT_ID = "-7969964492";
+
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -42,20 +44,42 @@ export function ContactForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    
-    // Simulate API call
+
+    const text = `📨 <b>Новая заявка с лендинга</b>
+Имя: <b>${values.name}</b>
+Email: <b>${values.email}</b>
+Компания: ${values.company || "-"}
+Сообщение: ${values.message || "-"}`;
+
+    try {
+      await fetch(
+        `https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text,
+            parse_mode: "HTML",
+          }),
+        }
+      );
+    } catch {
+    }
+
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
-      
+
       toast({
         title: "Заявка отправлена!",
         description: "Мы свяжемся с вами в ближайшее время.",
       });
-      
-      // Reset form after 1 second
+
       setTimeout(() => {
         form.reset();
         setIsSuccess(false);

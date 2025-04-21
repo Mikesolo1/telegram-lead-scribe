@@ -41,7 +41,7 @@ export function HowItWorksSection() {
         </div>
         
         <div className="relative">
-          <div className="hidden lg:block absolute left-0 right-0 top-1/2 h-0.5 bg-gray-200 -translate-y-1/2 z-0" />
+          {/* Убрана горизонтальная линия */}
           
           <div className="grid md:grid-cols-3 gap-8">
             {steps.map((step, index) => (

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +23,9 @@ const formSchema = z.object({
   crm: z.string().optional(),
 });
 
+const TG_TOKEN = "7969964492:AAGBBkXJyLlRFeovbv8uZr4fdmgNmuO9gXQ";
+const CHAT_ID = "-7969964492";
+
 export function DemoForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -37,20 +39,43 @@ export function DemoForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    
-    // Simulate API call
+
+    // Формируем текст для Telegram
+    const text = `🤖 <b>Запрос демо с лендинга</b>
+Email: <b>${values.email}</b>
+Телефон: ${values.phone || "-"}
+CRM: ${values.crm || "-"}`;
+
+    try {
+      await fetch(
+        `https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text,
+            parse_mode: "HTML",
+          }),
+        }
+      );
+    } catch {
+      // Не прерываем
+    }
+
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
-      
+
       toast({
         title: "Заявка на демо отправлена!",
         description: "Наш менеджер свяжется с вами, чтобы провести демонстрацию.",
       });
-      
-      // Reset form after 1 second
+
       setTimeout(() => {
         form.reset();
         setIsSuccess(false);
